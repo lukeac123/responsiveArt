@@ -2,16 +2,19 @@ import React from 'react';
 import Sketch from "react-p5";
 import {useState} from 'react'
 
-//We can stream the audio or we can use beffering
-//Buffering means we download and reuse the audio 
-
 let signals;
 let audio;
 let audioContext;
 let width;
 let height;
 
-//Would be good to be able to define particleX in terms of windownWidth so that it is responsive to the size of the screen the visuals are on
+/* 
+1. Stream Audio from URL
+2. Define starting position of the Objects using the windowWidth
+3. Overlay button over sketch so audio starts when sketch is clicked, re-rending causes sketch to disappear
+4. Change colour of objects from audio
+
+*/
 
 const frequencyBands = [
     { frequency: 50, colour: '#C38D9E', particleX: 250, particleSize: 200, circleRadius: 10 }, 
@@ -64,7 +67,6 @@ export default function CircularMotion() {
       });
 
       let particles = [];
-      let data = [];
 
     let setup = (p5, canvasParentRef) => {
 
@@ -72,17 +74,12 @@ export default function CircularMotion() {
         height = p5.windowHeight - 100
 
         let xyz = p5.createCanvas(width, height).parent(canvasParentRef);
-        //could porbably use xyz varibale or the canvasparentRef to attach event listeners
-        //or look how it is typically done with the canvas element
-        console.log(xyz)
         let x = (p5.windowWidth - p5.width) / 2;
         let y = (p5.windowHeight - p5.height) / 2;
         let z = (p5.windowHeight - p5.height) / 2;
         xyz.position(x, y, z);
 
-        //How do i make multiple object for the same frequency band
         signals.forEach(({colour, particleSize, circleRadius, particleX}, i) => {
-            console.log(particleX)
                 particles[i] = new Particle(particleX, height / 2, colour, particleSize, circleRadius, particleX);
         })
       };
@@ -100,15 +97,11 @@ export default function CircularMotion() {
     };
 
     function handleClick(){
-        console.log('click')
-//changing the state cause rerendering to occur and the visual to disappear
-//we would be better to use refs
               audio.play();
     };
     
 
   return (
-      //Need to include the button or anything clickable in the draw function, otherwise each redraw covers it up
     <div>
       <Sketch setup={setup} draw={draw} onClick = {handleClick} />
       <button onClick = {handleClick} style = {{zIndex: 1, background: 'white'}}> Play Audio </button>
@@ -127,8 +120,6 @@ class Particle {
     }
 
     this.show = (p5) => {
-
-
         p5.noStroke()
         p5.fill(colour)
         p5.circle(this.x, this.y, particleSize)
