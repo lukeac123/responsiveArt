@@ -1,6 +1,6 @@
 import React from 'react';
 import Sketch from "react-p5";
-import {useState} from 'react'
+import {useState, useRef} from 'react'
 
 let signals;
 let audio;
@@ -9,34 +9,38 @@ let width;
 let height;
 
 /* 
-1. Stream Audio from URL
-2. Define starting position of the Objects using the windowWidth
-3. Overlay button over sketch so audio starts when sketch is clicked, re-rending causes sketch to disappear
-4. Change colour of objects from audio
+- Establish way to duplicate whole system
+- Stream Audio from URL
+- Define starting position of the Objects using the windowWidth
+- Overlay button over sketch so audio starts when sketch is clicked, re-rending causes sketch to disappear
+- Change colour of objects from audio
+- Change from JS into Typescript
 
 */
 
 const frequencyBands = [
-    { frequency: 50, colour: '#C38D9E', particleX: 250, particleSize: 200, circleRadius: 10 }, 
-    { frequency: 50, colour: '#C38D9E', particleX: 500, particleSize: 200, circleRadius: 10 },
-    { frequency: 200, colour: '#41B3A3', particleX: 250, particleSize: 150, circleRadius: 40  },
-    { frequency: 200, colour: '#41B3A3', particleX: 500, particleSize: 150, circleRadius: 40  },  
-    { frequency: 400, colour: '#E8A87C', particleX: 250, particleSize: 50, circleRadius: 80 }, 
-    { frequency: 400, colour: '#E8A87C', particleX: 500, particleSize: 50, circleRadius: 80 }, 
-    { frequency: 800, colour: '#85DCBA', particleX: 250, particleSize: 20, circleRadius: 100 }, 
-    { frequency: 800, colour: '#85DCBA', particleX: 500, particleSize: 20, circleRadius: 100 }, 
-    { frequency: 2000, colour: '#E27D60', particleX: 250, particleSize: 10, circleRadius: 200 }, 
-    { frequency: 2000, colour: '#E27D60', particleX: 500, particleSize: 10, circleRadius: 200 }, 
+    { frequency: 50, colour: '#C38D9E', particleX: 300, particleSize: 200, circleRadius: 10 }, 
+    { frequency: 50, colour: '#C38D9E', particleX: -300, particleSize: 200, circleRadius: 10 },
+    { frequency: 200, colour: '#41B3A3', particleX: 300, particleSize: 150, circleRadius: 40  },
+    { frequency: 200, colour: '#41B3A3', particleX: -300, particleSize: 150, circleRadius: 40  },  
+    { frequency: 400, colour: '#E8A87C', particleX: 300, particleSize: 50, circleRadius: 80 }, 
+    { frequency: 400, colour: '#E8A87C', particleX: -300, particleSize: 50, circleRadius: 80 }, 
+    { frequency: 800, colour: '#85DCBA', particleX: 300, particleSize: 20, circleRadius: 100 }, 
+    { frequency: 800, colour: '#85DCBA', particleX: -300, particleSize: 20, circleRadius: 100 }, 
+    { frequency: 2000, colour: '#E27D60', particleX: 300, particleSize: 10, circleRadius: 200 }, 
+    { frequency: 2000, colour: '#E27D60', particleX: -300, particleSize: 10, circleRadius: 200 }, 
   ];
 
 export default function CircularMotion() {
     const [isPlaying, setIsPlaying] = useState(false)
 
-    //Create Audio Connection
-    audio = document.createElement('audio');
+    // Create Audio Connection
+    let audioNode = useRef(null).current
+    audioNode = document.getElementById('audioNode')
+    console.log(audioNode)
+    const [audio, setAudio] = useState(new Audio);
     audio.src = '/intro.mp3';
-    audio.loop = false;
-    
+  
     audioContext = new AudioContext();
     const source = audioContext.createMediaElementSource(audio);
     let gainNode = audioContext.createGain();
@@ -67,6 +71,7 @@ export default function CircularMotion() {
       });
 
       let particles = [];
+      let particles1 = [];
 
     let setup = (p5, canvasParentRef) => {
 
@@ -80,7 +85,9 @@ export default function CircularMotion() {
         xyz.position(x, y, z);
 
         signals.forEach(({colour, particleSize, circleRadius, particleX}, i) => {
-                particles[i] = new Particle(particleX, height / 2, colour, particleSize, circleRadius, particleX);
+          const positionX = p5.windowWidth/2 + particleX
+                particles[i] = new Particle(positionX, height / 2, colour, particleSize, circleRadius, particleX);
+                // particles1[i] = new Particle(positionX, height / 2, colour, particleSize, circleRadius, particleX);
         })
       };
     
@@ -90,21 +97,25 @@ export default function CircularMotion() {
             analyserNode.getFloatTimeDomainData(analyserData);
             let signal = rootMeanSquaredSignal(analyserData);
             signal = p5.min(p5.width, p5.height)*signal //scale the signal to relative size
-            particles[i].x = 0
+            // particles[i].x = 0
             particles[i].move(p5, signal); 
             particles[i].show(p5);
+
+            // particles1[i].x = 0
+            // particles1[i].move(p5, signal); 
+            // particles1[i].show(p5);
         });
     };
 
     function handleClick(){
-              audio.play();
+      isPlaying? audio.pause():audio.play();
     };
     
 
   return (
     <div>
       <Sketch setup={setup} draw={draw} onClick = {handleClick} />
-      <button onClick = {handleClick} style = {{zIndex: 1, background: 'white'}}> Play Audio </button>
+      <button onClick = {handleClick} style = {{zIndex: 1, background: 'white'}}> Play  </button>
     </div>
   );
 }
