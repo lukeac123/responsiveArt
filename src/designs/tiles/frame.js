@@ -2,21 +2,34 @@ import React from 'react';
 import Sketch from "react-p5";
 import {useState, useRef} from 'react'
 
-let signals;
-let audio;
-let audioContext;
-let width;
-let height;
-
 /* 
 - Establish way to duplicate whole system
 - Stream Audio from URL
 - Define starting position of the Objects using the windowWidth
 - Overlay button over sketch so audio starts when sketch is clicked, re-rending causes sketch to disappear
-- Change colour of objects from audio
+- Change colour of objects from audio, would have to change colours to HSL and iterate over in draw loop
 - Change from JS into Typescript
 
 */
+
+let signals;
+let audioContext;
+
+const tilesX = 5
+const tilesY = 4
+
+let setup = (p5, canvasParentRef) => {
+
+  const width = p5.windowWidth - 50
+  const height = p5.windowHeight - 50
+
+  let xyz = p5.createCanvas(width, height).parent(canvasParentRef);
+  let x = (p5.windowWidth - p5.width) / 2;
+  let y = (p5.windowHeight - p5.height) / 2;
+  let z = (p5.windowHeight - p5.height) / 2;
+  xyz.position(x, y, z);
+}
+
 
 const frequencyBands = [
     { frequency: 50, colour: '#C38D9E', particleX: 300, particleSize: 200, circleRadius: 10 }, 
@@ -26,10 +39,15 @@ const frequencyBands = [
     { frequency: 2000, colour: '#E27D60', particleX: 300, particleSize: 10, circleRadius: 200 }, 
   ];
 
-export default function Frame() {
+export default function Frame(p5) {
 
     const audio = new Audio;
     audioContext = new AudioContext();
+
+    // const sketch = new Sketch()
+    // console.log(sketch)
+
+
     audio.src = '/test.mp3';
     const source = audioContext.createMediaElementSource(audio);
     let gainNode = audioContext.createGain();
@@ -57,38 +75,40 @@ export default function Frame() {
         };
       });
 
-    let setup = (p5, canvasParentRef) => {
-
-        width = p5.windowWidth - 100
-        height = p5.windowHeight - 100
-        let xyz = p5.createCanvas(width, height).parent(canvasParentRef);
-        let x = (p5.windowWidth - p5.width) / 2;
-        let y = (p5.windowHeight - p5.height) / 2;
-        let z = (p5.windowHeight - p5.height) / 2;
-        xyz.position(x, y, z);
-    }
-
-    const positions = [0, 500, 1000, 1500, 2000]
-
     function draw(p5) {
         p5.background("black");
 
-        for(let x = 0; x<2000; x=x+200){
+        const xIncrement = p5.windowWidth / tilesX
+        const yIncrement = p5.windowHeight / tilesY
+        const colours = ['#C38D9E', '#41B3A3', '#E8A87C', '#85DCBA', '#E27D60' ]
+      
+        for (let x = 0; x<p5.windowWidth; x=x+xIncrement){
+          for(let y = 0; y<p5.windowHeight; y=y+yIncrement){
 
-        signals.forEach(({analyserNode, analyserData, colour}, i) => {
+            p5.stroke('white')
+            p5.noFill()
+            p5.rect(x,y,xIncrement, yIncrement)
+
+          }}
+
+          for (let x = xIncrement/2; x<p5.windowWidth; x=x+xIncrement){
+            for(let y = yIncrement/2; y<p5.windowHeight; y=y+yIncrement){
+            //const positions = [{x:0,y:0},{x:500,y:500},{x: width,y:0},{x: width,y: height},{x:width/2,y:height/2}]
+
+          signals.forEach(({analyserNode, analyserData, colour}, i) => {
             analyserNode.getFloatTimeDomainData(analyserData);
             let signal = rootMeanSquaredSignal(analyserData);
             signal = p5.min(p5.width, p5.height)*signal
 
-            p5.push()
-              p5.noStroke()
-              p5.fill(colour)
-              p5.circle(x,500, signal)
-            p5.pop()
+            const randomColour = p5.random(colours)
 
-            // particles[i].show(p5, signal);
+              p5.noStroke()
+              p5.fill(randomColour)
+              // p5.rect (x, y, signal)
+              p5.circle (x, y, signal)
+
         });
-      }
+        }}
     };
 
     function handleClick(){
@@ -97,33 +117,16 @@ export default function Frame() {
     
 
   return (
-    <div>
-      <Sketch setup={setup} draw={draw} onClick = {handleClick} />
-      <button onClick = {handleClick} style = {{zIndex: 1, background: 'white'}}> Play  </button>
+    <div style = {{background: 'black', paddingY: '10px', width: '98vw', height: '98vh'}}>
+      <div>
+        <Sketch setup={setup} draw={draw} onClick = {handleClick} />
+      </div>
+      <div style = {{position: 'absolute', top: '0px'}}>
+        <button onClick = {handleClick} style = {{width: '98vw', zIndex: 1, background: 'black', height: '30px', borderColor: 'black', textDecorationColor: 'white'}}>  >  </button>
+      </div>
     </div>
   );
 }
-
-//To create and duplicate a larger system, use another Class Component
-
-
-// class Particle { 
-//   constructor(x,y, colour) {
-//     this.show = (p5, signal) => {
-//         p5.noStroke()
-//         p5.fill(colour)
-//         p5.circle(x,y, signal)
-//     };
-// }};
-
-// class System {
-//     constructor(x,y,colour){
-//         new Particle()
-
-//     }
-
-// }
-
 
   function rootMeanSquaredSignal(data) {
     let rms = 0;
