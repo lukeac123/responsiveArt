@@ -39,7 +39,7 @@ const frequencyBands = [
     { frequency: 2000, colour: '#E27D60', particleX: 300, particleSize: 10, circleRadius: 200 }, 
   ];
 
-export default function Frame(p5) {
+export default function App(p5) {
 
     const audio = new Audio;
     audioContext = new AudioContext();
@@ -122,7 +122,7 @@ export default function Frame(p5) {
         <Sketch setup={setup} draw={draw} onClick = {handleClick} />
       </div>
       <div style = {{position: 'absolute', top: '0px'}}>
-        <button onClick = {handleClick} style = {{width: '98vw', zIndex: 1, background: 'black', height: '30px', borderColor: 'black', textDecorationColor: 'white'}}>  >  </button>
+        <button onClick = {handleClick} style = {{width: '98vw', zIndex: 1, background: 'black', height: '30px', borderColor: 'black', textDecorationColor: 'white'}}>  Play  </button>
       </div>
     </div>
   );

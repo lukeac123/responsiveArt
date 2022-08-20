@@ -31,7 +31,7 @@ const frequencyBands = [
     { frequency: 2000, colour: '#E27D60', particleX: -300, particleSize: 10, circleRadius: 200 }, 
   ];
 
-export default function CircularMotion() {
+export default function App() {
     const [isPlaying, setIsPlaying] = useState(false)
 
     // Create Audio Connection
