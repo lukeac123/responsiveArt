@@ -23,14 +23,14 @@ export default function SolarSystem({analyserNode, colour, analyserData, signals
         p5.circle(250,250,250)
 
 
-        // signals.forEach(({ analyserNode, analyserData}, i) => {
-        //     analyserNode.getFloatTimeDomainData(analyserData);
-        //     let signal = rootMeanSquaredSignal(analyserData);
-        //     signal = p5.min(p5.width, p5.height)*signal //scale the signal to relative size
+        signals.forEach(({ analyserNode, analyserData}, i) => {
+            analyserNode.getFloatTimeDomainData(analyserData);
+            let signal = rootMeanSquaredSignal(analyserData);
+            signal = p5.min(p5.width, p5.height)*signal //scale the signal to relative size
             
-        //     particles[i].move(p5, signal); 
-        //     particles[i].show(p5);
-        // });
+            particles[i].move(p5, signal); 
+            particles[i].show(p5);
+        });
     };
 
    
@@ -40,7 +40,11 @@ export default function SolarSystem({analyserNode, colour, analyserData, signals
 
 
   return (
+    <div>
+      Hello from solarSystem
       <Sketch setup={setup} draw={draw} />
+    </div>
+ 
   );
 }
 

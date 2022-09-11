@@ -41,14 +41,14 @@ const frequencyBands = [
 
 export default function App(p5) {
 
-    const audio = new Audio;
+    const audio = new Audio();
     audioContext = new AudioContext();
 
     // const sketch = new Sketch()
     // console.log(sketch)
 
 
-    audio.src = '/test.mp3';
+    audio.src = '/audioFile.mp3';
     const source = audioContext.createMediaElementSource(audio);
     let gainNode = audioContext.createGain();
     source.connect(gainNode);
@@ -95,6 +95,8 @@ export default function App(p5) {
             for(let y = yIncrement/2; y<p5.windowHeight; y=y+yIncrement){
             //const positions = [{x:0,y:0},{x:500,y:500},{x: width,y:0},{x: width,y: height},{x:width/2,y:height/2}]
 
+            console.log(signals)
+
           signals.forEach(({analyserNode, analyserData, colour}, i) => {
             analyserNode.getFloatTimeDomainData(analyserData);
             let signal = rootMeanSquaredSignal(analyserData);
@@ -113,13 +115,15 @@ export default function App(p5) {
 
     function handleClick(){
       audio.play();
+      console.log('play')
+      console.log(audioContext.state)
     };
     
 
   return (
-    <div style = {{background: 'black', paddingY: '10px', width: '98vw', height: '98vh'}}>
+    <div style = {{position: 'absolute', top: '10px', background: 'black', paddingY: '10px', width: '80vw', height: '80vh'}}>
       <div>
-        <Sketch setup={setup} draw={draw} onClick = {handleClick} />
+        <Sketch setup={setup} draw={draw} />
       </div>
       <div style = {{position: 'absolute', top: '0px'}}>
         <button onClick = {handleClick} style = {{width: '98vw', zIndex: 1, background: 'black', height: '30px', borderColor: 'black', textDecorationColor: 'white'}}>  Play  </button>

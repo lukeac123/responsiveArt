@@ -1,6 +1,6 @@
 import React from 'react';
 import Sketch from "react-p5";
-import {useState, useRef} from 'react'
+import {useState, useRef, useEffect} from 'react'
 
 let signals;
 let audio;
@@ -32,21 +32,30 @@ const frequencyBands = [
   ];
 
 export default function App() {
-    const [isPlaying, setIsPlaying] = useState(false)
+    // const [isPlaying, setIsPlaying] = useState(false)
 
     // Create Audio Connection
-    let audioNode = useRef(null).current
-    audioNode = document.getElementById('audioNode')
-    console.log(audioNode)
-    const [audio, setAudio] = useState(new Audio);
-    audio.src = '/intro.mp3';
-  
+
+    // let audioNode = useRef(null).current
+    // audioNode = document.getElementById('audioNode')
+    // console.log(audioNode)
+    
+
+    const audio = new Audio();
+    audio.src = '/audioFile.mp3';
     audioContext = new AudioContext();
+
     const source = audioContext.createMediaElementSource(audio);
     let gainNode = audioContext.createGain();
 
     source.connect(gainNode);
     gainNode.connect(audioContext.destination);
+
+    source.connect(audioContext.destination)
+
+    console.log(audio)
+    console.log(audioContext)
+
     
     signals = frequencyBands.map(({ frequency, colour, particleSize, circleRadius, particleX }) => {
         const analyserNode = audioContext.createAnalyser();
@@ -108,7 +117,10 @@ export default function App() {
     };
 
     function handleClick(){
-      isPlaying? audio.pause():audio.play();
+      audio.play()
+      
+      console.log('Play')
+      console.log(audioContext.state)
     };
     
 

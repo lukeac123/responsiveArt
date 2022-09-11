@@ -21,7 +21,10 @@ export default function CircularMotion () {
     for (let i = 0; i < particles.length; i++){
       particles[i].move(p5); 
       particles[i].show(p5);
-}};
+}
+};
+
+
 return (
     <div className="App">
       <Sketch setup={setup} draw={draw} className="App" />
