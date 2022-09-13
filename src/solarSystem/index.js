@@ -6,23 +6,10 @@
 */
 
 import React from 'react';
-import Sketch from "react-p5";
 import {useState, useEffect} from 'react'
 
 let signals;
 let audioContext;
-
-let setup = (p5, canvasParentRef) => {
-
-  const width = p5.windowWidth
-  const height = p5.windowHeight
-
-  let xyz = p5.createCanvas(width, height).parent(canvasParentRef);
-  let x = (p5.windowWidth - p5.width) / 2;
-  let y = (p5.windowHeight - p5.height) / 2;
-  let z = (p5.windowHeight - p5.height) / 2;
-  xyz.position(x, y, z);
-}
 
 const frequencyBands = [
     { Eq: 'bass', frequency: 50, colour: '#C38D9E', particleX: 300, particleSize: 200, circleRadius: 10 }, 
@@ -31,9 +18,7 @@ const frequencyBands = [
     { Eq: 'high', frequency: 2000, colour: '#85DCBA', particleX: 300, particleSize: 20, circleRadius: 100 }, 
   ];
 
-export default function App(p5) {
-
-    const audio = new Audio();
+  const audio = new Audio();
     audioContext = new AudioContext();
 
     audio.src = '/test.mp3';
@@ -43,31 +28,34 @@ export default function App(p5) {
     source.connect(gainNode);
     gainNode.connect(audioContext.destination);
 
-    const [bass, setBass] = useState('bass')
-    const [lowMids, setlowMids] = useState()
-    const [highMids, setHighMids] = useState()
-    const [highs, setHighs] = useState()
+  signals = frequencyBands.map(({ frequency, colour, Eq }) => {
+    const analyserNode = audioContext.createAnalyser();
+    analyserNode.smoothingTimeConstant = 1;
+    const analyserData = new Float32Array(analyserNode.fftSize);
+    const filterNode = audioContext.createBiquadFilter();
+    filterNode.frequency.value = frequency;
+    filterNode.Q.value = 1;
+    filterNode.type = "bandpass";
+    source.connect(filterNode);
+    filterNode.connect(analyserNode);
 
-    
-    signals = frequencyBands.map(({ frequency, colour, Eq }) => {
-        const analyserNode = audioContext.createAnalyser();
-        analyserNode.smoothingTimeConstant = 1;
-        const analyserData = new Float32Array(analyserNode.fftSize);
-        const filterNode = audioContext.createBiquadFilter();
-        filterNode.frequency.value = frequency;
-        filterNode.Q.value = 1;
-        filterNode.type = "bandpass";
-        source.connect(filterNode);
-        filterNode.connect(analyserNode);
+    return {
+      analyserNode,
+      colour,
+      analyserData,
+      Eq,
+      colour
+    };
+  });
+
   
-        return {
-          analyserNode,
-          colour,
-          analyserData,
-          Eq,
-          colour
-        };
-      });
+
+export default function App() {
+
+    const [bass, setBass] = useState(100)
+    // const [lowMids, setlowMids] = useState()
+    // const [highMids, setHighMids] = useState()
+    // const [highs, setHighs] = useState()
 
       useEffect(() => {
         if (audio){
@@ -80,21 +68,14 @@ export default function App(p5) {
       },[audio])
 
       function signalsUpdate(){
-
-        let signalAmplitude = signals.map(({analyserNode, analyserData, Eq, colour}, i) => {
+       signals.map(({analyserNode, analyserData, Eq, colour}, i) => {
           analyserNode.getFloatTimeDomainData(analyserData);
-   
           let signal = rootMeanSquaredSignal(analyserData); //Take array of data and convert into average
-          signal = signal*100 //Make the singal proportional to the height / width of the screen
-          // signal = p5.min(p5.width, p5.height)*signal 
-          return {[Eq]: signal, 'colour': colour, i}
+          signal = signal*1000 //Make the signal proportional to the height / width of the screen
+          setBass(signal)
+          //{[Eq]: signal, 'colour': colour}
       });
-
-      const bass = signalAmplitude[0].bass
-     
-      //using state to set the bass is turning the signal to 0 on the second time the singalsUpdate is called, figure out why
-     
-      };
+    }
 
     function handleClick(){
       audio.play();
@@ -104,7 +85,7 @@ export default function App(p5) {
   return (
     <div>
       <div style = {{position: 'absolute', top: '0px'}}>
-        <div style = {{background: 'pink', width: `${bass}px`, height: '100px'}}> {bass} </div>
+        <div style = {{background: 'pink', height: '100px', width: `${bass}px`}}> </div>
         <button onClick = {handleClick} style = {{background: 'transparrent', width: '100vw', zIndex: 1, height: '30px', borderColor: 'black', textDecorationColor: 'white'}}>  Play  </button>
       </div>
     </div>
