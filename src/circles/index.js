@@ -1,27 +1,22 @@
 /* 
 - Stream Audio from URL / connect to computer audio input
-- Define starting position of the Objects using the windowWidth
-- Change colour of objects from audio
 - Change from JS into Typescript
+- use css to create smoother drawing transitions
 */
-
-//Set the audio input to stream using the aduo context api
-//to get a smoother drawing experinece use setTimeout to rerun a draw function at the desired time interval
-// use CSS transitions for a smotther drawing 
 
 import React from 'react';
 import {useState, useEffect} from 'react'
 import Box from './box'
-import PlayCircleIcon from '@mui/icons-material/PlayCircle';
+// import PlayCircleIcon from '@mui/icons-material/PlayCircle';
 
 let signals;
 let audioContext;
 
 const frequencyBands = [
-    { Eq: 'bass', frequency: 50, colour: '#C38D9E', particleX: 300, particleSize: 200, circleRadius: 10}, 
-    { Eq: 'lowMids', frequency: 200, colour: '#41B3A3', particleX: 300, particleSize: 150, circleRadius: 40 },
-    { Eq: 'highMids', frequency: 400, colour: '#E8A87C', particleX: 300, particleSize: 50, circleRadius: 80}, 
-    { Eq: 'highs', frequency: 2000, colour: '#85DCBA', particleX: 300, particleSize: 20, circleRadius: 100}, 
+    { frequency: 50, colour: '#C38D9E'}, 
+    { frequency: 200, colour: '#41B3A3'},
+    { frequency: 400, colour: '#E8A87C'}, 
+    { frequency: 2000, colour: '#85DCBA'}, 
   ];
 
   const audio = new Audio();
@@ -39,7 +34,7 @@ const frequencyBands = [
     source.connect(gainNode);
     gainNode.connect(audioContext.destination);
 
-  signals = frequencyBands.map(({ frequency, colour, Eq }) => {
+  signals = frequencyBands.map(({ frequency, colour }) => {
     const analyserNode = audioContext.createAnalyser();
     analyserNode.smoothingTimeConstant = 1;
     const analyserData = new Float32Array(analyserNode.fftSize);
@@ -53,8 +48,7 @@ const frequencyBands = [
     return {
       analyserNode,
       colour,
-      analyserData,
-      Eq,
+      analyserData
     };
   });
 
@@ -78,7 +72,7 @@ export default function App() {
       },[audio])
 
       function signalsUpdate(){
-       let data = signals.map(({analyserNode, analyserData, Eq, colour}, i) => {
+       let data = signals.map(({analyserNode, analyserData, colour}, i) => {
           analyserNode.getFloatTimeDomainData(analyserData);
           let signal = rootMeanSquaredSignal(analyserData); //Take array of data and convert into average
           signal = signal*window.innerHeight*3 //Make the signal proportional to the height / width of the screen
@@ -105,7 +99,7 @@ export default function App() {
       </button>
       {bass && (
       <div style = {{background: 'black', position: 'absolute', height: '99vh', width: '99vw', display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
-        <Box data={bass} />
+        <Box style = {{position: 'absolute', top: '10px' }} data={bass} />
         <Box data={lowMids} />
         <Box data={highMids} />
         <Box data={highs} />
