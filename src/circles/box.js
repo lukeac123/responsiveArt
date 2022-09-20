@@ -3,17 +3,22 @@ import React from 'react';
 
 export default function Box({data}) {
 
-  // const colour = data.colour
   const number = data.signal
+  let colour = data.colour
+  const newColour = colour.slice(0,12) + `${number}%)`
+
+  console.log(newColour)
+  //figure out how to normalise the singal between 100 so the hsl colour is always decent
+  //this normalisation could be applied to the whole system to maintain consistency
+  //The total signal should porbably always be 100 split across the different frequency bands
  
 
-  const colour = `rgb(287, 36, ${number})`
 
   return (
     <div>
       <div 
       style = {{
-      display: 'absolute',
+      // position: 'absolute',
       background: colour, 
       width: `${number}px`, 
       height: `${number}px`,  

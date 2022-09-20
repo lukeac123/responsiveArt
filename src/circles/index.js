@@ -7,16 +7,16 @@
 import React from 'react';
 import {useState, useEffect} from 'react'
 import Box from './box'
-// import PlayCircleIcon from '@mui/icons-material/PlayCircle';
+import PlayCircleIcon from '@mui/icons-material/PlayCircle';
 
 let signals;
 let audioContext;
 
 const frequencyBands = [
-    { frequency: 50, colour: '#C38D9E'}, 
-    { frequency: 200, colour: '#41B3A3'},
-    { frequency: 400, colour: '#E8A87C'}, 
-    { frequency: 2000, colour: '#85DCBA'}, 
+    { frequency: 30, colour: 'hsl(50,100%,50%)'}, 
+    { frequency: 100, colour: 'hsl(100,100%,50%)'},
+    { frequency: 400, colour: 'hsl(150,100%,50%)'}, 
+    { frequency: 1000, colour: 'hsl(230,100%,50%)'}, 
   ];
 
   const audio = new Audio();
@@ -95,11 +95,11 @@ export default function App() {
     <div style = {{display: 'flex'}}>
       {/* use Icon from play button */}
       <button onClick = {handleClick} style = {{background: 'transparent', width: '100vw', zIndex: 1, height: '30px'}}>
-        Play
+        <PlayCircleIcon />
       </button>
       {bass && (
       <div style = {{background: 'black', position: 'absolute', height: '99vh', width: '99vw', display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
-        <Box style = {{position: 'absolute', top: '10px' }} data={bass} />
+        <Box data={bass} />
         <Box data={lowMids} />
         <Box data={highMids} />
         <Box data={highs} />
