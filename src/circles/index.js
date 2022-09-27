@@ -24,9 +24,26 @@ const frequencyBands = [
 
     // const stream = 'microphone'
 
-    audio.src = '/dnb.mp3';
+    audio.src = '/house.mp3';
 
     // const mediaStreamSource = audioContext.createMediaStreamSource( stream );
+
+    console.log(navigator)
+
+
+    if (navigator.mediaDevices) {
+      console.log("getUserMedia supported.");
+      navigator.mediaDevices
+        .getUserMedia({ audio: true, video: false })
+        .then((stream) => {
+          audio.srcObject = stream;
+          audio.onloadedmetadata = (e) => {
+            console.log("media is fetched and ready to play")
+          };
+        })   
+      } else {
+        console.log("getUserMedia not supported.")
+      }
 
 
     const source = audioContext.createMediaElementSource(audio);
@@ -54,12 +71,17 @@ const frequencyBands = [
 
 
 export default function App() {
+  const [playing, setPlaying] = useState(false)
+  const [output, setOutput] = useState([])
 
-    // const [bass, setBass] = useState({})
-    // const [lowMids, setlowMids] = useState({})
-    // const [highMids, setHighMids] = useState({})
-    // const [highs, setHighs] = useState({})
-    const [output, setOutput] = useState([])
+  function handlePlay(){
+    if (!playing){
+      audio.play();
+      setPlaying(true);
+    } else {
+    audio.pause();
+    setPlaying(false);
+  }}
 
       useEffect(() => {
         if (audio){
@@ -86,15 +108,11 @@ export default function App() {
     const highMids = output[2]
     const highs = output[3]
 
-    function handleClick(){
-      audio.play();
-    };
-
 
   return (
     <div style = {{display: 'flex'}}>
       {/* use Icon from play button */}
-      <button onClick = {handleClick} style = {{background: 'transparent', width: '100vw', zIndex: 1, height: '30px'}}>
+      <button onClick = {handlePlay} style = {{background: 'transparent', width: '100vw', zIndex: 1, height: '30px'}}>
         <PlayCircleIcon />
       </button>
       {bass && (
