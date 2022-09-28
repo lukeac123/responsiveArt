@@ -12,27 +12,18 @@ import PlayCircleIcon from '@mui/icons-material/PlayCircle';
 let signals;
 let audioContext;
 
+
 const frequencyBands = [
-    { frequency: 30, colour: 'hsl(50,100%,50%)'}, 
-    { frequency: 100, colour: 'hsl(100,100%,50%)'},
-    { frequency: 400, colour: 'hsl(150,100%,50%)'}, 
-    { frequency: 1000, colour: 'hsl(230,100%,50%)'}, 
+    { frequency: 100, colour: 'hsl(50,100%,50%)'}, 
+    { frequency: 400, colour: 'hsl(100,100%,50%)'},
+    { frequency: 800, colour: 'hsl(150,100%,50%)'}, 
+    { frequency: 1500, colour: 'hsl(230,100%,50%)'}, 
   ];
 
   const audio = new Audio();
     audioContext = new AudioContext();
 
-    // const stream = 'microphone'
-
-    audio.src = '/house.mp3';
-
-    // const mediaStreamSource = audioContext.createMediaStreamSource( stream );
-
-    console.log(navigator)
-
-
     if (navigator.mediaDevices) {
-      console.log("getUserMedia supported.");
       navigator.mediaDevices
         .getUserMedia({ audio: true, video: false })
         .then((stream) => {
@@ -68,6 +59,16 @@ const frequencyBands = [
       analyserData
     };
   });
+
+  const tilesArray = []
+
+    for(let i=0; i<100; i=i+10 ){
+      tilesArray.push(i)
+    }
+
+    console.log(tilesArray)
+
+
 
 
 export default function App() {
@@ -108,15 +109,25 @@ export default function App() {
     const highMids = output[2]
     const highs = output[3]
 
+  
+
 
   return (
     <div style = {{display: 'flex'}}>
-      {/* use Icon from play button */}
-      <button onClick = {handlePlay} style = {{background: 'transparent', width: '100vw', zIndex: 1, height: '30px'}}>
+      <button onClick = {handlePlay} style = {{position:'absolute', right: '0px', bottom:'0px', zIndex: 1, height: '30px'}}>
         <PlayCircleIcon />
       </button>
       {bass && (
-      <div style = {{background: 'black', position: 'absolute', height: '99vh', width: '99vw', display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
+      <div style = {{background: 'black', position: 'absolute', height: '99vh', width: '99vw', display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: -2}}>
+        {tilesArray.map(width => {
+          return(
+            <div style = {{zIndex: -1}}>
+        <div style = {{background: 'pink', position: 'absolute', height: `${highs.signal}vh`, width: '10vw', top: '0', left: `${width}vw`}} />
+        <div style = {{background: 'pink', position: 'absolute', height: `${highMids.signal}vh`, width: '10vw', top: '25vh', left: `${width}vw`}} />
+        <div style = {{background: 'pink', position: 'absolute', height: `${lowMids.signal}vh`, width: '10vw', top: '50vh', left: `${width}vw`}} />
+        <div style = {{background: 'pink', position: 'absolute', height: `${bass.signal}vh`, width: '10vw', top: '75vh', left: `${width}vw`}} />
+        </div>
+         )})}
         <Box data={bass} />
         <Box data={lowMids} />
         <Box data={highMids} />

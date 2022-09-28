@@ -6,8 +6,6 @@ export default function Box({data}) {
   const number = data.signal
   let colour = data.colour
   const newColour = colour.slice(0,12) + `${number}%)`
-
-  console.log(newColour)
   //figure out how to normalise the singal between 100 so the hsl colour is always decent
   //this normalisation could be applied to the whole system to maintain consistency
   //The total signal should porbably always be 100 split across the different frequency bands
