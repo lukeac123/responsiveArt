@@ -2,7 +2,7 @@
 - Stream Audio from URL / connect to computer audio input
 - Create AudioPlayerBar Component to import 
 - Change from JS into Typescript
-- use css to create smoother drawing transitions
+- map the maximum volume to the window height / width 
 */
 
 import React from 'react';
@@ -31,12 +31,22 @@ const frequencyBands = [
         .then((stream) => {
           audio.srcObject = stream;
           audio.onloadedmetadata = (e) => {
+            console.log(e)
             console.log("media is fetched and ready to play")
           };
         })   
       } else {
         console.log("getUserMedia not supported.")
       }
+
+      // getUserMedia({
+      //   audio: {
+      //     deviceId: {
+      //       exact: myExactCameraOrBustDeviceId
+      //     }
+      //   }
+      // })
+      
 
 
     const source = audioContext.createMediaElementSource(audio);
@@ -65,6 +75,7 @@ const frequencyBands = [
 export default function App() {
   const [playing, setPlaying] = useState(false)
   const [output, setOutput] = useState([])
+  const [analyserData, setAnalyserData] = useState([])
 
   function handlePlay(){
     if (!playing){
@@ -76,7 +87,7 @@ export default function App() {
   }}
 
       useEffect(() => {
-        if (audio){
+        if (audio){        
         audio.addEventListener('timeupdate', signalsUpdate)
         }
         return () => {
@@ -85,22 +96,28 @@ export default function App() {
         }}
       },[audio])
 
+
+//there's probably a clean what to do this
       function signalsUpdate(){
        let data = signals.map(({analyserNode, analyserData, colour}, i) => {
           analyserNode.getFloatTimeDomainData(analyserData);
           let signal = rootMeanSquaredSignal(analyserData); //Take array of data and convert into average
           signal = signal*window.innerHeight*3 //Make the signal proportional to the height / width of the screen
-          return {signal, colour, i}
+          setAnalyserData(analyserData) 
+          return {signal, colour, i, analyserData}
       });
-      setOutput(data)      
+      setOutput(data)   
     }
 
+    // console.log(analyserData)
+
+
+// can this be intergrate into the signals update function ?
     const bass = output[0]
     const lowMids = output[1]
     const highMids = output[2]
     const highs = output[3]
 
-  
 
 
   return (
@@ -109,9 +126,16 @@ export default function App() {
         <PlayCircleIcon />
       </button>
       {bass && (
-        <div style = {{background: 'pink', position: 'absolute', height: '99vh', width: '99vw', display: 'flex', zIndex: -99}}>
+           <div style = {{background: 'black', position: 'absolute', height: '100vh', width: '100vw', display: 'flex', zIndex: -99}}>
+             {/* {analyserData.map(element => {
+               console.log(element)
+               return(
+                 <div style={{background: 'pink', zIndex: 1, height: '100vh', left: element[0]}}>
+                 </div>
+               )
+             })} */}
            <div style={{position: 'absolute', zIndex: -2}}>
-            <Tiles output={output}/>
+            <Tiles output={output} />
             </div>
           <div style = {{position: 'absolute', height: '99vh', width: '99vw', display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: -1}}>
             <Circle data={bass} />
@@ -119,8 +143,7 @@ export default function App() {
             <Circle data={highMids} />
             <Circle data={highs} />
           </div>
-         
-        </div>
+          </div>
       )}
     </div>
   );

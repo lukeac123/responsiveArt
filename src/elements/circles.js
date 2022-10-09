@@ -23,10 +23,17 @@ export default function Circle({data}) {
       borderRadius: '1000px', 
       // boxShadow: `inset -1px -1px 5px 5px white`, 
       transition: 'width 0.2s, height 0.2s, transform 0.2s',
-      }} /> 
+      display:'flex',
+      justifyContent: 'center', 
+      // filter: 'hue-rotate(180deg)',
+      alignItems: 'center' }} > 
+      </div>
+
       </div>
   );
 }
+
+{/* <img src='/smilyface.jpg' width={`${number/2}px`} height={`${number/2}px`} opacity={0.1} />  */}
 
 {/* figure out how to center this image, could maybe use an icon instead of an  image
     could also then use the package for a play button */}

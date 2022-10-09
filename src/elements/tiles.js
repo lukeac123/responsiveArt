@@ -1,9 +1,25 @@
-import React from 'react';
-import p5 from 'p5'
+import React, {useState, useEffect }from 'react';
 
-export default function Tiles({output}) {
 
-  // console.log(output)
+export default function Tiles({ output }) {
+
+  const [characterImgSrc, setCharacterimgSrc] = useState('/alice.png')
+
+  //why does not work properly, might need to take outside of function ?
+  setTimeout(()=>{
+    const characters = ['/alice.png', '/rabbit.png', '/hatter.png']
+    const rand = Math.floor(Math.random()*characters.length)
+    console.log('hi')
+    // setCharacterimgSrc(characters[rand])
+  }, 10000)
+
+
+
+
+
+  
+ 
+
 
     //Take the tile colour and make it vary according to the signal 
     // let colour = data.colour
@@ -21,23 +37,29 @@ export default function Tiles({output}) {
 
   let tilesArray = output.map(element => {
 
-    let tilesCoordinates = []
-    for(let i=0; i<=100; i=i+10){
-      tilesCoordinates.push(i)
-    }
-
+    // let tilesCoordinates = []
+    // for(let i=0; i<=100; i=i+10){
+    //   tilesCoordinates.push(i)
+    // }
     // console.log(tilesCoordinates)
 
-    
-
+  
     //this doesn't work when the hue is 2 digits (<100) need to figure out a different way of taking 'hs' values
     //or define the hsl value from 1-100 
     let colour = element.colour.slice(0,11) + `,${element.signal}%)`
+
+//Logic to assign different colours from those in signals/output array
+    // const colourPallete = ['hsl(80,75%,19%)', 'hsl(81,69%,42%)', 'hsl(66,90%,74%)', 'hsl(90,71%,35%)' ]
+    // let colour = `${colourPallete[element.i]}`
+    // colour = colour.slice(0,10) + `,${element.signal}%)`
+
 
         return(
             { x: element.i*10, y: element.i*10, signal: element.signal, colour: colour } 
         )
       })
+
+     
 
   // console.log(tilesArray)
  
@@ -45,9 +67,15 @@ export default function Tiles({output}) {
     <div style={{zIndex: -1}}>
       {tilesArray.map(({colour}, i) => {
         return( 
-          <div style = {{ display: 'fixed', background: `${colour}`, position: 'absolute', height: `10vh`, width: '10vw', top: `${i*10}vh`, left: `${i*10}vw`, transition: 'width 0.2s, height 0.2s, transform 0.2s'}} /> 
-        )
-      })}
+          <div>
+            <div style = {{ display: 'fixed', background: `${colour}`, position: 'absolute', height: `50vh`, width: '25vw', top: `${0}vh`, left: `${i*25}vw`, borderRadius: '100px', overflow: 'hidden', transition: 'width 0.2s, height 0.2s, transform 0.2s'}} >
+            <img src={characterImgSrc} style={{height: `50vh`, width: '25vw', opacity: '0.3', filter: 'contrast(50%)'}} />
+            </div>
+            <div style = {{ display: 'fixed', background: `${colour}`, position: 'absolute', height: `50vh`, width: '25vw', top: `${50}vh`, left: `${i*25}vw`, overflow: 'hidden', borderRadius: '100px', transition: 'width 0.2s, height 0.2s, transform 0.2s'}} >
+            <img src='/rabbit.png' style={{height: `50vh`, width: '25vw', backgroundColor: 'pink', opacity: '0.3',  filter: 'contrast(50%)'}} />
+            </div> 
+          </div>
+        )})}
       </div>
   );
 }
