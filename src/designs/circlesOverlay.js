@@ -16,10 +16,10 @@ let audioContext;
 
 
 const frequencyBands = [
-    { frequency: 100, colour: 'hsl(100,100%,50%)'}, 
-    { frequency: 400, colour: 'hsl(100,100%,50%)'},
-    { frequency: 800, colour: 'hsl(150,100%,50%)'}, 
-    { frequency: 1500, colour: 'hsl(230,100%,50%)'}, 
+    { frequency: 100, colour: 'hsl(100,50%,50%)'}, 
+    { frequency: 400, colour: 'hsl(200,60%,50%)'},
+    { frequency: 800, colour: 'hsl(300,40%,50%)'}, 
+    { frequency: 1500, colour: 'hsl(400,70%,50%)'}, 
   ];
 
   const audio = new Audio();

@@ -16,7 +16,7 @@ export default function Tiles({output}) {
     //replicate the p5.js push and pop
     //probaly need to create an array of all the appropriate positions and then merge it with the outputs array
 
-    console.log(window.innerWidth)
+    // console.log(window.innerWidth)
 
 
   let tilesArray = output.map(element => {
@@ -26,25 +26,25 @@ export default function Tiles({output}) {
       tilesCoordinates.push(i)
     }
 
-    console.log(tilesCoordinates)
+    // console.log(tilesCoordinates)
 
     
 
     //this doesn't work when the hue is 2 digits (<100) need to figure out a different way of taking 'hs' values
     //or define the hsl value from 1-100 
-    let colour = element.colour.slice(0,12) + `,${element.signal}%)`
+    let colour = element.colour.slice(0,11) + `,${element.signal}%)`
 
         return(
             { x: element.i*10, y: element.i*10, signal: element.signal, colour: colour } 
         )
       })
 
-  console.log(tilesArray)
+  // console.log(tilesArray)
  
   return (
     <div style={{zIndex: -1}}>
-      {tilesArray.map(({x,y,colour}, i) => {
-        return(
+      {tilesArray.map(({colour}, i) => {
+        return( 
           <div style = {{ display: 'fixed', background: `${colour}`, position: 'absolute', height: `10vh`, width: '10vw', top: `${i*10}vh`, left: `${i*10}vw`, transition: 'width 0.2s, height 0.2s, transform 0.2s'}} /> 
         )
       })}
