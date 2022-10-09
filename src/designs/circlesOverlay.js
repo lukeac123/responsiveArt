@@ -1,20 +1,22 @@
 /* 
 - Stream Audio from URL / connect to computer audio input
+- Create AudioPlayerBar Component to import 
 - Change from JS into Typescript
 - use css to create smoother drawing transitions
 */
 
 import React from 'react';
 import {useState, useEffect} from 'react'
-import Box from './box'
 import PlayCircleIcon from '@mui/icons-material/PlayCircle';
+import Tiles from '../elements/tiles'
+import Circle from '../elements/circles'
 
 let signals;
 let audioContext;
 
 
 const frequencyBands = [
-    { frequency: 100, colour: 'hsl(50,100%,50%)'}, 
+    { frequency: 100, colour: 'hsl(100,100%,50%)'}, 
     { frequency: 400, colour: 'hsl(100,100%,50%)'},
     { frequency: 800, colour: 'hsl(150,100%,50%)'}, 
     { frequency: 1500, colour: 'hsl(230,100%,50%)'}, 
@@ -60,17 +62,6 @@ const frequencyBands = [
     };
   });
 
-  const tilesArray = []
-
-    for(let i=0; i<100; i=i+10 ){
-      tilesArray.push(i)
-    }
-
-    console.log(tilesArray)
-
-
-
-
 export default function App() {
   const [playing, setPlaying] = useState(false)
   const [output, setOutput] = useState([])
@@ -99,7 +90,7 @@ export default function App() {
           analyserNode.getFloatTimeDomainData(analyserData);
           let signal = rootMeanSquaredSignal(analyserData); //Take array of data and convert into average
           signal = signal*window.innerHeight*3 //Make the signal proportional to the height / width of the screen
-          return {signal, colour}
+          return {signal, colour, i}
       });
       setOutput(data)      
     }
@@ -114,25 +105,22 @@ export default function App() {
 
   return (
     <div style = {{display: 'flex'}}>
-      <button onClick = {handlePlay} style = {{position:'absolute', right: '0px', bottom:'0px', zIndex: 1, height: '30px'}}>
+      <button onClick = {handlePlay} style = {{position:'absolute', right: '0px', top:'0px', zIndex: 1, height: '30px'}}>
         <PlayCircleIcon />
       </button>
       {bass && (
-      <div style = {{background: 'black', position: 'absolute', height: '99vh', width: '99vw', display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: -2}}>
-        {tilesArray.map(width => {
-          return(
-            <div style = {{zIndex: -1}}>
-        <div style = {{background: 'pink', position: 'absolute', height: `${highs.signal}vh`, width: '10vw', top: '0', left: `${width}vw`}} />
-        <div style = {{background: 'pink', position: 'absolute', height: `${highMids.signal}vh`, width: '10vw', top: '25vh', left: `${width}vw`}} />
-        <div style = {{background: 'pink', position: 'absolute', height: `${lowMids.signal}vh`, width: '10vw', top: '50vh', left: `${width}vw`}} />
-        <div style = {{background: 'pink', position: 'absolute', height: `${bass.signal}vh`, width: '10vw', top: '75vh', left: `${width}vw`}} />
+        <div style = {{background: 'pink', position: 'absolute', height: '99vh', width: '99vw', display: 'flex', zIndex: -99}}>
+           <div style={{position: 'absolute', zIndex: -2}}>
+            <Tiles output={output}/>
+            </div>
+          <div style = {{position: 'absolute', height: '99vh', width: '99vw', display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: -1}}>
+            <Circle data={bass} />
+            <Circle data={lowMids} />
+            <Circle data={highMids} />
+            <Circle data={highs} />
+          </div>
+         
         </div>
-         )})}
-        <Box data={bass} />
-        <Box data={lowMids} />
-        <Box data={highMids} />
-        <Box data={highs} />
-      </div>
       )}
     </div>
   );

@@ -1,7 +1,7 @@
 import React from 'react';
 // import {useState} from 'react'
 
-export default function Box({data}) {
+export default function Circle({data}) {
 
   const number = data.signal
   let colour = data.colour
