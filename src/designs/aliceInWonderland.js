@@ -121,12 +121,12 @@ export default function App() {
 
 
   return (
-    <div style = {{display: 'flex'}}>
+    <div style = {{position: 'absolute', top:'0px', right: '0px' }}>
       <button onClick = {handlePlay} style = {{position:'absolute', right: '0px', top:'0px', zIndex: 1, height: '30px'}}>
         <PlayCircleIcon />
       </button>
       {bass && (
-           <div style = {{background: 'black', position: 'absolute', height: '100vh', width: '100vw', display: 'flex', zIndex: -99}}>
+           <div style = {{background: 'black', right: '0px', height: '100vh', width: '100vw', display: 'flex', zIndex: -99}}>
              {/* {analyserData.map(element => {
                console.log(element)
                return(
@@ -134,7 +134,7 @@ export default function App() {
                  </div>
                )
              })} */}
-           <div style={{position: 'absolute', zIndex: -2}}>
+           <div>
             <Tiles output={output} />
             </div>
           <div style = {{position: 'absolute', height: '99vh', width: '99vw', display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: -1}}>
