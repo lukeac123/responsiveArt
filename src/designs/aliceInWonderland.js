@@ -27,7 +27,7 @@ const frequencyBands = [
 
     if (navigator.mediaDevices) {
       navigator.mediaDevices
-        .getUserMedia({ audio: true, video: false })
+        .getUserMedia({ audio : true, video: false })
         .then((stream) => {
           audio.srcObject = stream;
           audio.onloadedmetadata = (e) => {
@@ -38,16 +38,6 @@ const frequencyBands = [
       } else {
         console.log("getUserMedia not supported.")
       }
-
-      // getUserMedia({
-      //   audio: {
-      //     deviceId: {
-      //       exact: myExactCameraOrBustDeviceId
-      //     }
-      //   }
-      // })
-      
-
 
     const source = audioContext.createMediaElementSource(audio);
     let gainNode = audioContext.createGain();
@@ -96,52 +86,48 @@ export default function App() {
         }}
       },[audio])
 
-
-//there's probably a clean what to do this
       function signalsUpdate(){
        let data = signals.map(({analyserNode, analyserData, colour}, i) => {
           analyserNode.getFloatTimeDomainData(analyserData);
-          let signal = rootMeanSquaredSignal(analyserData); //Take array of data and convert into average
-          signal = signal*window.innerHeight*3 //Make the signal proportional to the height / width of the screen
+          let signal = rootMeanSquaredSignal(analyserData); 
+          signal = Math.floor(signal*1000) // not sure if the analyser data produced is linear, if so this scaling needs changing
           setAnalyserData(analyserData) 
           return {signal, colour, i, analyserData}
       });
       setOutput(data)   
     }
 
-    // console.log(analyserData)
 
-
-// can this be intergrate into the signals update function ?
+// can this be intergrated into the signals update function ?
     const bass = output[0]
     const lowMids = output[1]
     const highMids = output[2]
     const highs = output[3]
 
-
-
   return (
-    <div style = {{position: 'absolute', top:'0px', right: '0px' }}>
+    <div style = {{position: 'absolute', top:'0px', right: '0px' }} onClick = {handlePlay} >
       <button onClick = {handlePlay} style = {{position:'absolute', right: '0px', top:'0px', zIndex: 1, height: '30px'}}>
         <PlayCircleIcon />
       </button>
       {bass && (
-           <div style = {{background: 'black', right: '0px', height: '100vh', width: '100vw', display: 'flex', zIndex: -99}}>
-             {/* {analyserData.map(element => {
+           <div style = {{right: '0px', height: '100vh', width: '100vw', display: 'flex', zIndex: -99}}>
+             {/* <div style={{width: '100vw', height: '100vh', justifyContent: 'center', alignItems: 'center', position:'absolute', right: '0px', top:'0px'}}>
+             {analyserData.map(element => {
                console.log(element)
-               return(
-                 <div style={{background: 'pink', zIndex: 1, height: '100vh', left: element[0]}}>
-                 </div>
-               )
-             })} */}
+               return(  
+                 <div> {element} </div>
+                //  Math.floor(1*element)
+               )})}
+            {/* </div> */}
+
            <div>
             <Tiles output={output} />
             </div>
-          <div style = {{position: 'absolute', height: '99vh', width: '99vw', display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: -1}}>
-            <Circle data={bass} />
-            <Circle data={lowMids} />
-            <Circle data={highMids} />
-            <Circle data={highs} />
+          <div style = {{position: 'absolute', height: '99vh', width: '99vw', display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 1}}>
+            <Circle output={output} src={'/queen.png'}/>
+            <Circle output={output} src={'/rabbit.png'} />
+            <Circle output={output} src={'/cat.png'} />
+            <Circle output={output} src={'/alice.png'} />
           </div>
           </div>
       )}
@@ -157,4 +143,31 @@ export default function App() {
     return Math.sqrt(rms / data.length);
   }
 
+    function getMediaDevices(){
+      if (navigator.mediaDevices) {
+        navigator.mediaDevices.enumerateDevices()
+        .then((devices) => {
+          //add code tp idenitfy the specific input that you want
+          devices.forEach((device) => {
+             navigator.mediaDevices.getUserMedia({
+               audio: {
+                 deviceId: {
+                   id: device.id
+                  }
+                }
+              })
+              .then((stream) => {
+                audio.srcObject = stream;
+                audio.onloadedmetadata = (e) => {
+                  console.log(e)
+                  console.log("media is fetched and ready to play")
+                }
+          });
+        })
+        .catch((err) => {
+          console.error('cannot enumerate devices', err);
+        });
+    })
+  }
+  }
 
