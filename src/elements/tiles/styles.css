@@ -1,0 +1,12 @@
+.tileRoot{
+    width: 100vw; 
+    height: 100vh;
+}
+.tile{
+    display: inline-block;
+    width: 10vw;
+    height: 10vh;
+    marrgin: '-12px, 0px';
+    boxShadow: 0.1px 0.1px 5px 5px;
+    borderRadius: 100px
+}

@@ -1,0 +1,9 @@
+.shapeTransformRoot{
+    display: 'flex';
+    justify-content: center;
+    position: absolute;
+    background: pink; 
+    borderRadius: 10px; 
+    transition: width 0.2s, height 0.2s, transform 0.2s;
+    boxShadow: inset -1px -1px 5px 5px white
+}
