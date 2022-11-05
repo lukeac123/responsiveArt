@@ -31,7 +31,7 @@ const frequencyBands = [
     { frequency: 2000, colour: '#E27D60', particleX: -300, particleSize: 10, circleRadius: 200 }, 
   ];
 
-export default function App() {
+export default function CircularMotionSpeaker() {
     // const [isPlaying, setIsPlaying] = useState(false)
 
     // Create Audio Connection
@@ -42,7 +42,7 @@ export default function App() {
     
 
     const audio = new Audio();
-    audio.src = '/audioFile.mp3';
+    // audio.src = '/audioFile.mp3';  //wrong audio file was causing this to break
     audioContext = new AudioContext();
 
     const source = audioContext.createMediaElementSource(audio);
@@ -101,7 +101,6 @@ export default function App() {
       };
     
     function draw(p5) {
-        p5.background("black");
         signals.forEach(({ analyserNode, analyserData}, i) => {
             analyserNode.getFloatTimeDomainData(analyserData);
             let signal = rootMeanSquaredSignal(analyserData);
