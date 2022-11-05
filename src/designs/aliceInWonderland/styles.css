@@ -18,7 +18,10 @@
     background: white;
     border: white;
     margin-right: 10px;
-    margin-left: 10px
+    margin-left: 10px;
+}
+.button:hover {
+    cursor: pointer
 }
 .content{
     height: calc(100vh - 25px);
