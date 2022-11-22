@@ -124,7 +124,7 @@ export default function App() {
       {bass && (
            <div className='content'>
              {/* Add height, width and colour props to circle */}
-            <ShapeTransform output={output} variant='circle' />
+            {/* <ShapeTransform output={output} variant='circle' /> */}
             <Tiles output={output} />
           </div>
       )}
