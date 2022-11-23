@@ -94,7 +94,8 @@ export default function App() {
           let signal = rootMeanSquaredSignal(analyserData); 
           // need to normalise the signal between 0-100 so works with HSL
           // if alayser data sin't linear the below won't work 
-          signal = Math.floor(signal*1000) 
+          signal = Math.floor(signal*1000)
+           console.log(signal)
           setAnalyserData(analyserData) 
           return {signal, colour, i, analyserData}
       });

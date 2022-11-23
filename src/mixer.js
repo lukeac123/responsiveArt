@@ -1,44 +1,48 @@
 import Sketch from "react-p5";
 import React from 'react';
 
-//Make different channels so that the volume of different frequency bands can be adjusted easily
+//TODO: Make different channels so that the volume of different frequency bands can be adjusted easily. Want this to work like a mixer channel
 
 const audio = new Audio();
 const audioContext = new AudioContext();
 
-    if (navigator.mediaDevices) {
-      navigator.mediaDevices
+if (navigator.mediaDevices) {
+    navigator.mediaDevices
         .getUserMedia({ audio : true, video: false })
         .then((stream) => {
-          audio.srcObject = stream;
-          audio.onloadedmetadata = (e) => {
-            console.log("media is fetched and ready to play")
-          };
-        })   
-      } else {
-        console.log("getUserMedia not supported.")
-      }
+            audio.srcObject = stream;
+            audio.onloadedmetadata = (e) => {
+                console.log("media is fetched and ready to play")
+            };
+        })
+} else {
+    console.log("getUserMedia not supported.")
+}
 
-    const source = audioContext.createMediaElementSource(audio);
-    let gainNode = audioContext.createGain();
-    source.connect(gainNode);
-    gainNode.connect(audioContext.destination);
- 
+const source = audioContext.createMediaElementSource(audio);
+let gainNode = audioContext.createGain();
+source.connect(gainNode);
+gainNode.connect(audioContext.destination);
+
+//TODO: turn frequencyBands into object so different filter types can be applied to diffrerent frequencies, use low and high pass to book end
+
 function splitAudioDataIntoFrequencyBands(){
   const frequencyBands = [100, 400, 800, 1500]
 
   let rawFrequencyBandData = frequencyBands.map(frequency => {
+
     const analyserNode = audioContext.createAnalyser();
     analyserNode.smoothingTimeConstant = 1;
     const analyserData = new Float32Array(analyserNode.fftSize);
+
+
+    //TODO: look into the biquad filter and other potential alternatives, biqud filter might not work to do the raw data
     const filterNode = audioContext.createBiquadFilter();
     filterNode.frequency.value = frequency;
     filterNode.Q.value = 1;
     filterNode.type = "bandpass";
     source.connect(filterNode);
     filterNode.connect(analyserNode);
-    //analyser Data is always returning 0 ??
-    console.log(analyserData)
     return {analyserData, analyserNode}
   })
   return rawFrequencyBandData
@@ -46,10 +50,9 @@ function splitAudioDataIntoFrequencyBands(){
 
 function signalsUpdate(rawFrequencyBandData){
   let normalisedFrequencyBandData = rawFrequencyBandData.map(({analyserData, analyserNode}) => {
-    // console.log(analyserData)
     analyserNode.getFloatTimeDomainData(analyserData);
     let signal = rootMeanSquaredSignal(analyserData); 
-    signal = Math.floor(signal*1000) 
+    // signal = Math.floor(signal*1000)
     return signal
   })
   return normalisedFrequencyBandData
@@ -66,11 +69,12 @@ export default function CircularMotion () {
     xyz.position(x, y, z)
   };
     
-  function draw(p5){ 
+  function draw(p5){
+      // returns raw frequency band data
     let rawFrequencyBandData = splitAudioDataIntoFrequencyBands()
-    // console.log(rawFrequencyBandData)
+      // return average data
     let normalisedFrequencyBandData = signalsUpdate(rawFrequencyBandData)
-    // console.log(normalisedFrequencyBandData)
+      console.log(normalisedFrequencyBandData)
 };
 
 
