@@ -1,5 +1,7 @@
 import Sketch from "react-p5";
-import React from 'react';
+import React, { useState } from 'react';
+import {Pause, PlayArrow, Stop} from "@mui/icons-material";
+import './mixer.css'
 
 //TODO: Make different channels so that the volume of different frequency bands can be adjusted easily. Want this to work like a mixer channel
 
@@ -30,7 +32,6 @@ function splitAudioDataIntoFrequencyBands(){
   const frequencyBands = [100, 400, 800, 1500]
 
   let rawFrequencyBandData = frequencyBands.map(frequency => {
-
     const analyserNode = audioContext.createAnalyser();
     analyserNode.smoothingTimeConstant = 1;
     const analyserData = new Float32Array(analyserNode.fftSize);
@@ -39,7 +40,7 @@ function splitAudioDataIntoFrequencyBands(){
     //TODO: look into the biquad filter and other potential alternatives, biqud filter might not work to do the raw data
     const filterNode = audioContext.createBiquadFilter();
     filterNode.frequency.value = frequency;
-    filterNode.Q.value = 1;
+    filterNode.Q.value = 2;
     filterNode.type = "bandpass";
     source.connect(filterNode);
     filterNode.connect(analyserNode);
@@ -49,17 +50,18 @@ function splitAudioDataIntoFrequencyBands(){
 }
 
 function signalsUpdate(rawFrequencyBandData){
-  let normalisedFrequencyBandData = rawFrequencyBandData.map(({analyserData, analyserNode}) => {
+  const normalisedFrequnecyBandData = rawFrequencyBandData.map(({analyserData, analyserNode}) => {
     analyserNode.getFloatTimeDomainData(analyserData);
-    let signal = rootMeanSquaredSignal(analyserData); 
+    let signal = rootMeanSquaredSignal(analyserData);
     // signal = Math.floor(signal*1000)
     return signal
   })
-  return normalisedFrequencyBandData
+  return normalisedFrequnecyBandData
 };
 
-
-export default function CircularMotion () {
+export default function Mixer () {
+    const [data, setData] = useState([1,2,3,4])
+    const [playing, setPlaying] = useState(false)
 
   function setup (p5, canvasParentRef){
     let xyz = p5.createCanvas(500, 500).parent(canvasParentRef);
@@ -71,16 +73,34 @@ export default function CircularMotion () {
     
   function draw(p5){
       // returns raw frequency band data
-    let rawFrequencyBandData = splitAudioDataIntoFrequencyBands()
+    const rawFrequencyBandData = splitAudioDataIntoFrequencyBands()
       // return average data
-    let normalisedFrequencyBandData = signalsUpdate(rawFrequencyBandData)
-      console.log(normalisedFrequencyBandData)
+    const normalisedFrequencyBandData = signalsUpdate(rawFrequencyBandData)
+    setData(normalisedFrequencyBandData)
 };
+
+    function handlePlay(){
+        if (!playing){
+            audio.play();
+            setPlaying(true);
+        } else {
+            audio.pause();
+            setPlaying(false);
+        }}
 
 
 return (
     <div className="App">
-      Hello World
+        <span className='buttonBar' style = {{background: 'black', height: '30px'}} >
+            <button className='button' classes={{fill: 'white', colour: 'white'}} onClick = {handlePlay} >
+                {playing? <Pause/>:<PlayArrow/>}
+            </button>
+            <button className='button'  onClick = {''} >
+                {/* onClick close the audio context */}
+                <Stop/>
+            </button>
+        </span>
+        {data}
       <Sketch setup={setup} draw={draw} className="App" />
     </div>
 )};

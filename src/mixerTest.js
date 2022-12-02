@@ -1,20 +1,18 @@
-/* 
-- Look at P5.js again 
-- Can the media connection be removed from this file => would redux to manage the state of each of the components make sense ?
-- Stream Audio from URL / connect to computer audio input
-- Change from JS into Typescript
-- map the maximum volume to the window height / width 
-*/
-
 import React from 'react';
+import Sketch from "react-p5";
 import {useState, useEffect} from 'react'
 import {PlayArrow, Pause, Stop} from '@mui/icons-material';
-import Tiles from '../../elements/tiles/index'
-import ShapeTransform from '../../elements/shapeTransform/index'
-import './styles.css'
 
 let signals;
 let audioContext;
+
+function setup (p5, canvasParentRef){
+    let xyz = p5.createCanvas(500, 500).parent(canvasParentRef);
+    let x = (p5.windowWidth - p5.width) / 2;
+    let y = (p5.windowHeight - p5.height) / 2;
+    let z = (p5.windowHeight - p5.height) / 2;
+    xyz.position(x, y, z)
+  };
 
 
 const frequencyBands = [
@@ -64,7 +62,7 @@ const frequencyBands = [
     };
   });
 
-export default function App() {
+export default function Mixer() {
   const [playing, setPlaying] = useState(false)
   const [output, setOutput] = useState([])
   const [analyserData, setAnalyserData] = useState([])
@@ -78,17 +76,7 @@ export default function App() {
     setPlaying(false);
   }}
 
-      useEffect(() => {
-        if (audio){        
-        audio.addEventListener('timeupdate', signalsUpdate)
-        }
-        return () => {
-         if(audio){
-          audio.removeEventListener('timeupdate', signalsUpdate)
-        }}
-      },[audio])
-
-      function signalsUpdate(){
+      function draw(){
        let data = signals.map(({analyserNode, analyserData, colour}, i) => {
           analyserNode.getFloatTimeDomainData(analyserData);
           let signal = rootMeanSquaredSignal(analyserData); 
@@ -110,9 +98,9 @@ export default function App() {
 
     console.log(bass?.signal)
 
-
   return (
     <div className='base'>
+        Mixer Test
 
       <span className='buttonBar' style = {{height: '30px'}} >
       <button className='button' classes={{fill: 'white', colour: 'white'}} onClick = {handlePlay} >
@@ -123,14 +111,14 @@ export default function App() {
         <Stop/>
       </button>
       </span>
+
+    <span>
+      {bass?.signal}
+    </span>
+
+      <Sketch setup={setup} draw={draw} className="App" />
     
-      {bass && (
-           <div className='content'>
-             {/* Add height, width and colour props to circle */}
-            {/* <ShapeTransform output={output} variant='circle' /> */}
-            <Tiles output={output} />
-          </div>
-      )}
+      
     </div>
     
   );
@@ -145,31 +133,4 @@ export default function App() {
     }
     return Math.sqrt(rms / data.length);
   }
-
-  //   function getMediaDevices(){
-  //     if (navigator.mediaDevices) {
-  //       navigator.mediaDevices.enumerateDevices()
-  //       .then((devices) => {
-  //         //add code tp idenitfy the specific input that you want
-  //         devices.forEach((device) => {
-  //            navigator.mediaDevices.getUserMedia({
-  //              audio: {
-  //                deviceId: {
-  //                  id: device.id
-  //                 }
-  //               }
-  //             })
-  //             .then((stream) => {
-  //               audio.srcObject = stream;
-  //               audio.onloadedmetadata = (e) => {
-  //                 console.log(e)
-  //                 console.log("media is fetched and ready to play")
-  //               }
-  //         });
-  //       })
-  //       .catch((err) => {
-  //         console.error('cannot enumerate devices', err);
-  //       });
-  //   })
-  // }}
 
