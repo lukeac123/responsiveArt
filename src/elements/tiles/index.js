@@ -9,7 +9,7 @@ const colourPallete = ['hsl(80,75%,19%)', 'hsl(81,69%,42%)', 'hsl(66,90%,74%)', 
 
 //fix hsl, currently can only apply signal when hue is 3 digits, could define hue from 1-100
 
-export default function Tiles({ output, variant }) {
+export default function Tiles({ output }) {
 
 let tilesArray=[];
      for(let i=0; i<25; i++){
