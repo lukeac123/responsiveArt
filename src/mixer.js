@@ -4,6 +4,8 @@ import Tiles from './elements/tiles'
 import {useState, useEffect} from 'react'
 import {PlayArrow, Pause, Stop} from '@mui/icons-material';
 
+// I think we want the option to be able to defione a colour palette at the top level and then custoize for individual elements if desired.
+
 //TODO: 1. 
 //TODO: 2. open and close draw loop on play / stop
 //TODO: 3. look into smoothing constants to make less glitchy (average out the signal change)
@@ -59,7 +61,7 @@ const frequencyBands = [
     return normalisedFrequnecyBandData
   };
 
-
+//TODO: Modify the below so the filter type can be changed for the different frequencies
   signals = frequencyBands.map(({ frequency, filterType }) => {
     const analyserNode = audioContext.createAnalyser();
     analyserNode.smoothingTimeConstant = 1;
@@ -92,38 +94,21 @@ export default function Mixer() {
 
       function draw(p5){
         p5.background('black')
-
-        const normalisedFrequencyBandData = signalsUpdate(signals)
-        console.log(normalisedFrequencyBandData)
-
-      setOutput(normalisedFrequencyBandData)  
-      p5.noStroke()
-      p5.fill('blue') 
-      p5.circle(300,300,output[0])
-
-      p5.fill('red') 
-      p5.circle(300,300,output[1])
-
-      p5.fill('green') 
-      p5.circle(300,300,output[2])
-
-      p5.fill('pink') 
-      p5.circle(300,300,output[3])
-
+        const normalisedFrequencyBandData = signalsUpdate(signals)  
+        setOutput(normalisedFrequencyBandData)  
     }
 
   return (
-    <div className='base' style = {{background: 'black', position: 'absolute', top:0, left: 0}}>
+    <div className='base' style = {{display: 'flex', background: 'black', position: 'absolute', top:0, left: 0}}>
       <span className='buttonBar' style = {{height: '30px', position: 'absolute'}} >
       <button className='button' classes={{fill: 'white', colour: 'white'}} onClick = {handlePlay} >
         {playing? <Stop/>:<PlayArrow/>}
       </button>
       </span>
-    {output &&  <Tiles output={output}/> }
-
-   
-
       <Sketch setup={setup} draw={draw} />
+      {output &&  <Tiles output={output}/> }
+
+     
     
       
     </div>

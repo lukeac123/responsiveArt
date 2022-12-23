@@ -11,21 +11,24 @@ const colourPallete = ['hsl(80,75%,19%)', 'hsl(81,69%,42%)', 'hsl(66,90%,74%)', 
 
 export default function Tiles({ output }) {
 
+console.log(output)
+
 let tilesArray=[];
      for(let i=0; i<25; i++){
       output.map(element => {
         const rand = Math.floor(Math.random()*colourPallete.length)
-        const colour = colourPallete[rand].slice(0,10) + `,${10+ element.signal}%)`
+        const colour = colourPallete[rand].slice(0,10) + `,${10+ element}%)`
         // const colour = element.colour.slice(0,11) + `,${10+ element.signal}%)`
-        tilesArray.push({ signal: element.signal, colour: colour})
+        tilesArray.push({ signal: element, colour: colour})
           })
      };
  
   return (
-    <div className='tileRoot'>
-      {tilesArray?.map(element => {
+    <div className='tileRoot'>      
+      {tilesArray?.map(tile => {
+        // console.log(tile)
         return(
-          <div className='tile' style={{backgroundColor: `${element.colour}`, borderRadius: '100px'}}/>
+          <div className='tile' style={{backgroundColor: `${tile.colour}`, borderRadius: `${tile.signal}px`}}/>
         )})}
       </div>
   );
