@@ -1,6 +1,7 @@
 import React from 'react';
 import Sketch from "react-p5";
 import Tiles from './elements/tiles'
+import SpectrumAnalyser from './elements/spectrumAnalyser';
 import {useState, useEffect} from 'react'
 import {PlayArrow, Pause, Stop} from '@mui/icons-material';
 
@@ -12,6 +13,7 @@ import {PlayArrow, Pause, Stop} from '@mui/icons-material';
 //TODO: 4. look into processing.js, if only using p5.js for draw loop can repace with setTimeOut
 
 let signals;
+let spectrumData;
 
 const audio = new Audio();
 const audioContext = new AudioContext();
@@ -56,6 +58,7 @@ const frequencyBands = [
       analyserNode.getFloatTimeDomainData(analyserData);
       let signal = rootMeanSquaredSignal(analyserData);
       signal = Math.floor(signal*10000)
+      spectrumData = analyserData
       return signal
     })
     return normalisedFrequnecyBandData
@@ -81,7 +84,6 @@ const frequencyBands = [
 export default function Mixer() {
   const [playing, setPlaying] = useState(false)
   const [output, setOutput] = useState([])
-  const [analyserData, setAnalyserData] = useState([])
 
   function handlePlay(){
     if (!playing){
@@ -93,25 +95,24 @@ export default function Mixer() {
   }}
 
       function draw(p5){
-        p5.background('black')
+        // p5.background('black')
         const normalisedFrequencyBandData = signalsUpdate(signals)  
         setOutput(normalisedFrequencyBandData)  
     }
 
   return (
-    <div className='base' style = {{display: 'flex', background: 'black', position: 'absolute', top:0, left: 0}}>
-      <span className='buttonBar' style = {{height: '30px', position: 'absolute'}} >
-      <button className='button' classes={{fill: 'white', colour: 'white'}} onClick = {handlePlay} >
+    <div className='base' style = {{display: 'flex', background: 'black', position: 'absolute', top:0, left: 0, height: '100vh', width: '100vw'}}>
+
+      <span className='buttonBar' style = {{height: '30px', position: 'absolute', background: 'black', zIndex:99 }} >
+      <button className='button' classes={{fill: 'black', colour: 'black'}} onClick = {handlePlay} >
         {playing? <Stop/>:<PlayArrow/>}
       </button>
       </span>
+      {spectrumData &&  <SpectrumAnalyser float32Array={spectrumData}/> }
+      {/* {output &&  <Tiles output={output}/> } */}
       <Sketch setup={setup} draw={draw} />
-      {output &&  <Tiles output={output}/> }
-
-     
-    
-      
     </div>
+
     
   );
 }

@@ -11,8 +11,6 @@ const colourPallete = ['hsl(80,75%,19%)', 'hsl(81,69%,42%)', 'hsl(66,90%,74%)', 
 
 export default function Tiles({ output }) {
 
-console.log(output)
-
 let tilesArray=[];
      for(let i=0; i<25; i++){
       output.map(element => {
@@ -26,7 +24,6 @@ let tilesArray=[];
   return (
     <div className='tileRoot'>      
       {tilesArray?.map(tile => {
-        // console.log(tile)
         return(
           <div className='tile' style={{backgroundColor: `${tile.colour}`, borderRadius: `${tile.signal}px`}}/>
         )})}
