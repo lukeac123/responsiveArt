@@ -1,9 +1,11 @@
 import React from 'react';
 import Sketch from "react-p5";
 import Tiles from './elements/tiles'
-import SpectrumAnalyser from './elements/spectrumAnalyser';
-import {useState, useEffect} from 'react'
-import {PlayArrow, Pause, Stop} from '@mui/icons-material';
+import SpectrumAnalyser from './elements/standardAnalyser';
+import BallAnalyser from './elements/ballAnalyser';
+import BouncingBall from './elements/bouncingBall';
+import {useState } from 'react'
+import {PlayArrow, Stop} from '@mui/icons-material';
 
 // I think we want the option to be able to defione a colour palette at the top level and then custoize for individual elements if desired.
 
@@ -57,14 +59,14 @@ const frequencyBands = [
     const normalisedFrequnecyBandData = rawFrequencyBandData.map(({analyserData, analyserNode}) => {
       analyserNode.getFloatTimeDomainData(analyserData);
       let signal = rootMeanSquaredSignal(analyserData);
-      signal = Math.floor(signal*10000)
+      signal = Math.floor(signal*15000)
       spectrumData = analyserData
       return signal
     })
     return normalisedFrequnecyBandData
   };
 
-//TODO: Modify the below so the filter type can be changed for the different frequencies
+//TODO: Modify the below so the filter type can be changed for the different frequencies (low / high pass for top and bottom)
   signals = frequencyBands.map(({ frequency, filterType }) => {
     const analyserNode = audioContext.createAnalyser();
     analyserNode.smoothingTimeConstant = 1;
@@ -108,8 +110,10 @@ export default function Mixer() {
         {playing? <Stop/>:<PlayArrow/>}
       </button>
       </span>
-      {spectrumData &&  <SpectrumAnalyser float32Array={spectrumData}/> }
+      {/* {spectrumData &&  <SpectrumAnalyser float32Array={spectrumData}/> } */}
       {/* {output &&  <Tiles output={output}/> } */}
+      {/* {spectrumData &&  <BallAnalyser float32Array={spectrumData}/> } */}
+      {spectrumData &&  <BouncingBall float32Array={spectrumData}/> }
       <Sketch setup={setup} draw={draw} />
     </div>
 
